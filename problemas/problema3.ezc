@@ -1,107 +1,143 @@
-/* Problema 3: Soma e Produto de Matrizes */
+/* Declaracao das Matrizes (Capacidade Maxima 10x10) */
+int A := [10][10];
+int B := [10][10];
+int R := [10][10];
+int ra; int ca;
+int rb; int cb;
+int i; int j; int k;
+int acc;
 
-/* Declaracao de matrizes e variaveis */
-float matA := [5][5];
-float matB := [5][5];
-float matSoma := [5][5];
-float matProd := [5][5];
-int linA;
-int colA;
-int linB;
-int colB;
-int i;
-int j;
-int k;
-float acc;
+/* --- LEITURA DA MATRIZ A --- */
+echo("Digite linhas e colunas de A:");
+read(ra);
+read(ca);
 
-/* Leitura das dimensoes da Matriz A */
-echo("--- MATRIZ A ---");
-echo("Linhas de A:");
-read(linA);
-echo("Colunas de A:");
-read(colA);
+echo("Digite os elementos de A:");
+i := 0;
 
-/* Ajuste para indice 0 */
-linA := linA - 1;
-colA := colA - 1;
+READ_A_ROW:
+    if i >= ra then goto READ_A_END;
+    j := 0;
 
-/* Leitura dos elementos da Matriz A */
-echo("Digite elementos de A:");
-for i := 0 to linA do
-begin
-    for j := 0 to colA do
-    begin
-        read(matA[i][j]);
-    end
-end
+    READ_A_COL:
+        if j >= ca then goto READ_A_NEXT_ROW;
+        read(A[i][j]);
+        j := j + 1;
+        goto READ_A_COL;
 
-/* Leitura das dimensoes da Matriz B */
-echo("--- MATRIZ B ---");
-echo("Linhas de B:");
-read(linB);
-echo("Colunas de B:");
-read(colB);
+    READ_A_NEXT_ROW:
+        i := i + 1;
+        goto READ_A_ROW;
 
-/* Ajuste para indice 0 */
-linB := linB - 1;
-colB := colB - 1;
+READ_A_END:
 
-/* Leitura dos elementos da Matriz B */
-echo("Digite elementos de B:");
-for i := 0 to linB do
-begin
-    for j := 0 to colB do
-    begin
-        read(matB[i][j]);
-    end
-end
+/* --- LEITURA DA MATRIZ B --- */
+echo("Digite linhas e colunas de B:");
+read(rb);
+read(cb);
 
-echo(" ");
-echo("--- SOMA ---");
+echo("Digite os elementos de B:");
+i := 0;
 
-/* Verifica se as dimensoes sao compativeis para soma */
-if linA == linB and colA == colB then
-begin
-    echo("Resultado Soma:");
-    for i := 0 to linA do
-    begin
-        for j := 0 to colA do
-        begin
-            matSoma[i][j] := matA[i][j] + matB[i][j];
-            echo(matSoma[i][j]);
-        end
-    end
-end
-else
-begin
-    echo("Dimensoes invalidas para Soma");
-end
+READ_B_ROW:
+    if i >= rb then goto READ_B_END;
+    j := 0;
 
-echo(" ");
-echo("--- PRODUTO ---");
+    READ_B_COL:
+        if j >= cb then goto READ_B_NEXT_ROW;
+        read(B[i][j]);
+        j := j + 1;
+        goto READ_B_COL;
 
-/* Verifica se as dimensoes sao compativeis para multiplicacao */
-if colA == linB then
-begin
-    echo("Resultado Produto:");
-    for i := 0 to linA do
-    begin
-        for j := 0 to colB do
-        begin
-            acc := 0.0;
+    READ_B_NEXT_ROW:
+        i := i + 1;
+        goto READ_B_ROW;
+
+READ_B_END:
+
+
+/* ==========================================
+   OPERACAO 1: SOMA (A + B)
+   ========================================== */
+   
+/* Se as linhas forem iguais, verifica colunas. Se nao, erro. */
+if ra == rb then goto CHECK_COL_SUM;
+goto SOMA_IMPOSSIVEL;
+
+CHECK_COL_SUM:
+if ca == cb then goto CALC_SOMA;
+goto SOMA_IMPOSSIVEL;
+
+CALC_SOMA:
+    echo("--- Resultado da Soma ---");
+    i := 0;
+
+    SUM_ROW_LOOP:
+        if i >= ra then goto FIM_SOMA_CALC;
+        j := 0;
+        
+        SUM_COL_LOOP:
+            if j >= ca then goto SUM_NEXT_ROW;
             
-            /* Calculo do produto escalar */
-            for k := 0 to colA do
-            begin
-                acc := acc + (matA[i][k] * matB[k][j]);
-            end
+            R[i][j] := A[i][j] + B[i][j];
+            echo(R[i][j]);
             
-            matProd[i][j] := acc;
-            echo(matProd[i][j]);
-        end
-    end
-end
-else
-begin
-    echo("Dimensoes invalidas para Produto");
-end
+            j := j + 1;
+            goto SUM_COL_LOOP;
+            
+        SUM_NEXT_ROW:
+            i := i + 1;
+            goto SUM_ROW_LOOP;
+
+SOMA_IMPOSSIVEL:
+    echo("Soma impossivel: Dimensoes diferentes.");
+    goto FIM_SOMA_CALC;
+
+FIM_SOMA_CALC:
+
+
+/* ==========================================
+   OPERACAO 2: PRODUTO (A * B)
+   ========================================== */
+
+/* Colunas de A devem ser iguais as Linhas de B */
+if ca == rb then goto CALC_PROD;
+goto PROD_IMPOSSIVEL;
+
+CALC_PROD:
+    echo("--- Resultado do Produto ---");
+    
+    i := 0;
+    PROD_I_LOOP:
+        if i >= ra then goto FIM_PROD_CALC;
+        
+        j := 0;
+        PROD_J_LOOP:
+            if j >= cb then goto PROD_NEXT_I;
+            
+            acc := 0;
+            k := 0;
+            
+            PROD_K_LOOP:
+                if k >= ca then goto PROD_STORE;
+                
+                acc := acc + A[i][k] * B[k][j];
+                k := k + 1;
+                goto PROD_K_LOOP;
+            
+            PROD_STORE:
+                R[i][j] := acc;
+                echo(R[i][j]);
+                
+                j := j + 1;
+                goto PROD_J_LOOP;
+        
+        PROD_NEXT_I:
+            i := i + 1;
+            goto PROD_I_LOOP;
+
+PROD_IMPOSSIVEL:
+    echo("Produto impossivel: Colunas de A != Linhas de B.");
+
+FIM_PROD_CALC:
+    /* Fim do programa */
